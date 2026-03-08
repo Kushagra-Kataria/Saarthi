@@ -75,7 +75,7 @@ const Index = () => {
                 Submit a Complaint
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 text-base px-8">
+            <Button asChild size="lg" variant="outline" className="border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 text-base px-8 bg-transparent">
               <Link to="/track">
                 Track Your Complaint
                 <ArrowRight className="ml-2 h-5 w-5" />
