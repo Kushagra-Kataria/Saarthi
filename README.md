@@ -1,18 +1,21 @@
-# 🛡️ Saarthi — Smart Public Service Governance Platform
+# 🛡️ Saarthii — Smart Public Service Governance Platform
 
 > AI-powered civic complaint management system built for Indian cities. Submit complaints, track resolutions in real-time, and hold departments accountable.
 
 [![Demo Video](https://img.shields.io/badge/Demo-YouTube-red?logo=youtube)](https://youtu.be/x3wFj2a-pks)
-[![Live Frontend](https://img.shields.io/badge/Frontend-Vercel-black?logo=vercel)](https://saarthi-6mut.onrender.com)
 [![Live Backend](https://img.shields.io/badge/Backend-Render-blue?logo=render)](https://saarthi-6mut.onrender.com)
 
 ---
 
 ## 🎬 Demo Video
 
-[![Saarthi Demo](https://img.youtube.com/vi/x3wFj2a-pks/maxresdefault.jpg)](https://youtu.be/x3wFj2a-pks)
+[![Saarthii Demo](https://img.youtube.com/vi/x3wFj2a-pks/maxresdefault.jpg)](https://youtu.be/x3wFj2a-pks)
 
 ▶️ **[Watch Full Demo on YouTube](https://youtu.be/x3wFj2a-pks)**
+
+## 🎥 Prototype Video
+
+📎 **[Watch Prototype Walkthrough on Google Drive](https://drive.google.com/file/d/1l3q8huf4bhyWPGdkBgLGn_Hrzxts7hBe/view?usp=sharing)**
 
 ---
 
@@ -54,7 +57,7 @@
 ## 📁 Project Structure
 
 ```
-Saarthi/
+Saarthii/
 ├── src/                    # Frontend (React)
 │   ├── components/         # Reusable UI components
 │   │   ├── layout/         # Navbar, AdminLayout
@@ -133,7 +136,6 @@ uvicorn main:app --reload
 
 | Service | Platform | URL |
 |---------|----------|-----|
-| Frontend | Vercel | [saarthi.vercel.app](https://saarthi.vercel.app) |
 | Backend | Render | [saarthi-6mut.onrender.com](https://saarthi-6mut.onrender.com) |
 
 ### Deploy Backend (Render)
@@ -152,7 +154,7 @@ uvicorn main:app --reload
 
 ## 🧠 AI Classification
 
-Saarthi uses **Google Gemini 2.5 Flash** to analyze complaints in a single API call and predict:
+Saarthii uses **Google Gemini 2.5 Flash** to analyze complaints in a single API call and predict:
 
 - **Category** — Road, Garbage, Water, Electricity, Safety, Transport, Sanitation, Other
 - **Priority** — CRITICAL, HIGH, MEDIUM, LOW (based on urgency and danger level)
@@ -178,11 +180,6 @@ Falls back to rule-based classification if the API is unavailable.
 
 ---
 
-## 👤 Author
-
-**Kushagra Kataria**
-
----
 
 ## 📝 License
 
