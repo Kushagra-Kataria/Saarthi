@@ -192,9 +192,9 @@ const Index = () => {
                 >
                   <div className="text-3xl md:text-4xl font-extrabold text-primary">
                     {stat.isDecimal ? (
-                      <AnimatedCounter end={stat.value} suffix={stat.suffix} />
+                      <AnimatedCounter end={stat.value} suffix={stat.suffix} continueIncrementing={stat.continueIncrementing ?? true} />
                     ) : (
-                      <AnimatedCounter end={stat.value} suffix={stat.suffix || ''} />
+                      <AnimatedCounter end={stat.value} suffix={stat.suffix || ''} continueIncrementing={stat.continueIncrementing ?? true} />
                     )}
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>

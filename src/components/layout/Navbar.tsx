@@ -76,12 +76,12 @@ export function Navbar() {
             transition={{ delay: 0.6 + navLinks.length * 0.1, type: "spring", stiffness: 260, damping: 20 }}
           >
             <div className="ml-2 flex items-center gap-2">
-              {/* <Button size="sm" variant="outline" asChild> */}
-                {/* <Link to="/login">Login</Link>
-              </Button>
-              <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90" asChild>
-                <Link to="/signup">Sign Up</Link>
+              {/* <Button size="sm" variant="outline" asChild>
+                <Link to="/login">Login</Link>
               </Button> */}
+              <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90" asChild>
+                <Link to="/signup">Login</Link>
+              </Button>
             </div>
           </motion.div>
         </div>
