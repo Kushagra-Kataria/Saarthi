@@ -11,7 +11,7 @@ import { AlertTriangle, Clock, CheckCircle2, Users, Eye, UserCheck, CircleCheck 
 import { cn } from '@/lib/utils';
 import { departments, STATUS_COLORS, PRIORITY_COLORS, type Complaint } from '@/data/mockData';
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = 'https://saarthi-6mut.onrender.com';
 const CHART_COLORS = ['hsl(210,53%,23%)', 'hsl(27,91%,54%)', 'hsl(142,71%,35%)', 'hsl(38,92%,50%)', 'hsl(0,84%,50%)', 'hsl(210,30%,60%)', 'hsl(270,50%,50%)', 'hsl(180,50%,40%)'];
 const STATUS_CHART_COLORS = ['hsl(210,20%,70%)', 'hsl(38,92%,50%)', 'hsl(210,53%,23%)', 'hsl(27,91%,54%)', 'hsl(142,71%,35%)'];
 

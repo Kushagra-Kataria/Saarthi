@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 import { CATEGORY_DEPT_MAP, type Category } from '@/data/mockData';
 import 'leaflet/dist/leaflet.css';
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = 'https://saarthi-6mut.onrender.com';
 
 // Fix leaflet marker
 delete (L.Icon.Default.prototype as any)._getIconUrl;

@@ -7,7 +7,7 @@ import { Search, Check, Clock, AlertTriangle, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { STATUS_COLORS, PRIORITY_COLORS, type Status, type Complaint } from '@/data/mockData';
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = 'https://saarthi-6mut.onrender.com';
 const STATUS_ORDER: Status[] = ['Submitted', 'Under Review', 'Assigned', 'In Progress', 'Resolved'];
 
 export default function Track() {
