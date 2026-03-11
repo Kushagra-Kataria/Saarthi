@@ -147,7 +147,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t bg-card py-8">
         <div className="container text-center text-sm text-muted-foreground">
-          <p>© 2025 PS-CRM — Smart Public Service CRM. Built for Indian cities.</p>
+          <p>© 2025 Saarthi — Smart Public Service Governance. Built for Indian cities.</p>
           <p className="mt-1">A prototype for digital governance transformation.</p>
         </div>
       </footer>

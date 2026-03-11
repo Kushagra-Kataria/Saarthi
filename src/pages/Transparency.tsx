@@ -105,7 +105,7 @@ export default function Transparency() {
         </Card>
 
         <footer className="text-center text-sm text-muted-foreground py-4">
-          <p>Data updated in real-time. Powered by PS-CRM Smart Governance Platform.</p>
+          <p>Data updated in real-time. Powered by Saarthi Smart Governance Platform.</p>
         </footer>
       </div>
     </div>

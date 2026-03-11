@@ -22,7 +22,7 @@ export function Navbar() {
         <Link to="/" className="flex items-center gap-2">
           <Shield className="h-8 w-8 text-accent" />
           <div className="flex flex-col leading-none">
-            <span className="text-lg font-bold text-primary">PS-CRM</span>
+            <span className="text-lg font-bold text-primary">Saarthi</span>
             <span className="text-[10px] font-medium text-muted-foreground tracking-wider">SMART GOVERNANCE</span>
           </div>
         </Link>

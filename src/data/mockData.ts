@@ -493,7 +493,7 @@ export const complaints: Complaint[] = [
     sentiment: -0.35,
     citizenName: 'Mohammed Ismail',
     citizenMobile: '9876543229',
-    feedback: 'Tiles replaced with better quality ones. Footpath looks great now. Thank you PS-CRM team!',
+    feedback: 'Tiles replaced with better quality ones. Footpath looks great now. Thank you Saarthi team!',
     rating: 5,
     timeline: [
       { status: 'Submitted', date: '2025-05-01T10:00:00Z', note: 'Complaint registered via web portal' },
@@ -601,3 +601,4 @@ export const CATEGORY_DEPT_MAP: Record<Category, string> = {
   'Sanitation': 'BBMP Health',
   'Other': 'PWD',
 };
+

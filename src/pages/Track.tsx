@@ -5,20 +5,37 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search, Check, Clock, AlertTriangle, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { complaints, STATUS_COLORS, PRIORITY_COLORS, type Status } from '@/data/mockData';
+import { STATUS_COLORS, PRIORITY_COLORS, type Status, type Complaint } from '@/data/mockData';
 
+const API_BASE = 'http://localhost:8000';
 const STATUS_ORDER: Status[] = ['Submitted', 'Under Review', 'Assigned', 'In Progress', 'Resolved'];
 
 export default function Track() {
   const [searchId, setSearchId] = useState('');
   const [mobile, setMobile] = useState('');
-  const [found, setFound] = useState<typeof complaints[0] | null>(null);
+  const [found, setFound] = useState<Complaint | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSearch = () => {
-    const c = complaints.find(x => x.id.toLowerCase() === searchId.toLowerCase());
-    if (c) { setFound(c); setNotFound(false); }
-    else { setFound(null); setNotFound(true); }
+  const handleSearch = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE}/api/complaints/${encodeURIComponent(searchId)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setFound(data);
+        setNotFound(false);
+      } else {
+        setFound(null);
+        setNotFound(true);
+      }
+    } catch (err) {
+      console.error('Track error:', err);
+      setFound(null);
+      setNotFound(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

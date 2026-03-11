@@ -9,8 +9,10 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Check, Upload, MapPin, Loader2, Brain, Copy, Share2, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { complaints, CATEGORY_DEPT_MAP, type Category } from '@/data/mockData';
+import { CATEGORY_DEPT_MAP, type Category } from '@/data/mockData';
 import 'leaflet/dist/leaflet.css';
+
+const API_BASE = 'http://localhost:8000';
 
 // Fix leaflet marker
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -56,7 +58,6 @@ export default function Submit() {
   // Step 2
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState<Category | ''>('');
   const [dragOver, setDragOver] = useState(false);
   const [fileName, setFileName] = useState('');
 
@@ -66,38 +67,52 @@ export default function Submit() {
 
   // AI result
   const [aiResult, setAiResult] = useState<any>(null);
-  const [duplicate, setDuplicate] = useState<string | null>(null);
-  const [complaintId] = useState(`CMP-2025-${String(Math.floor(Math.random() * 90000) + 10000)}`);
+
+  const [complaintId, setComplaintId] = useState('');
 
   const isCritical = CRITICAL_KEYWORDS.some(kw => description.toLowerCase().includes(kw) || title.toLowerCase().includes(kw));
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     setLoading(true);
 
-    // Check duplicates
-    if (position && category) {
-      const dup = complaints.find(c =>
-        c.category === category &&
-        getDistance(position[0], position[1], c.lat, c.lng) < 500
-      );
-      if (dup) setDuplicate(dup.id);
-    }
-
-    // Simulate AI classification
-    setTimeout(() => {
-      const confidence = Math.floor(Math.random() * 10) + 88;
-      const sentiment = -(Math.random() * 0.6 + 0.3).toFixed(2);
-      setAiResult({
-        category: category || 'Road',
-        confidence,
-        priority: isCritical ? 'CRITICAL' : 'HIGH',
-        sentiment: Number(sentiment),
-        department: CATEGORY_DEPT_MAP[(category || 'Road') as Category],
+    try {
+      const response = await fetch(`${API_BASE}/api/complaints`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          mobile,
+          email: email || null,
+          title,
+          description,
+          category: 'Other',
+          lat: position![0],
+          lng: position![1],
+          address: address || 'Location selected on map',
+        }),
       });
-      setLoading(false);
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          const errorData = await response.json();
+          alert(errorData.detail || 'A similar complaint already exists. Please track it instead.');
+          return;
+        }
+        throw new Error('Failed to submit complaint');
+      }
+
+      const data = await response.json();
+
+      setComplaintId(data.complaintId);
+      setAiResult(data.aiResult);
       setSubmitted(true);
-    }, 1500);
-  }, [position, category, isCritical]);
+    } catch (err) {
+      console.error('Submission error:', err);
+      alert('Failed to submit complaint. Make sure the backend server is running.');
+    } finally {
+      setLoading(false);
+    }
+  }, [position, title, description, address, name, mobile, email]);
 
   const handleUseLocation = () => {
     if (navigator.geolocation) {
@@ -158,13 +173,7 @@ export default function Submit() {
                 </div>
               )}
 
-              {duplicate && (
-                <div className="bg-warning/10 border border-warning/30 rounded-lg p-4 mb-6 text-left">
-                  <p className="text-sm text-warning font-medium">
-                    🔗 Similar issue already reported ({duplicate}). Your report has been linked to increase priority.
-                  </p>
-                </div>
-              )}
+
 
               <div className="flex gap-3 justify-center">
                 <Button variant="outline" size="sm" onClick={() => navigator.clipboard.writeText(complaintId)}>
@@ -226,25 +235,28 @@ export default function Submit() {
                 <div>
                   <label className="text-sm font-medium text-foreground mb-1 block">Mobile Number *</label>
                   <div className="flex gap-2">
-                    <Input value={mobile} onChange={e => setMobile(e.target.value)} placeholder="+91 9876543210" className="flex-1" />
-                    <Button
+                    <Input value={mobile} onChange={e => { const v = e.target.value.replace(/\D/g, '').slice(0, 10); setMobile(v); }} placeholder="+91" className="flex-1" maxLength={10} />
+                    {/* <Button
                       variant="outline"
                       onClick={() => setOtpSent(true)}
                       disabled={otpSent || mobile.length < 10}
                       className={otpSent ? "text-success border-success" : ""}
                     >
                       {otpSent ? <><Check className="h-4 w-4 mr-1" /> Verified</> : 'Send OTP'}
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground mb-1 block">Email (optional)</label>
                   <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" type="email" />
                 </div>
+                {mobile.length > 0 && mobile.length !== 10 && (
+                  <p className="text-xs text-critical">Phone number must be exactly 10 digits</p>
+                )}
                 <Button
                   className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
                   onClick={() => setStep(2)}
-                  disabled={!name || !mobile}
+                  disabled={!name || mobile.length !== 10}
                 >
                   Next: Complaint Details
                 </Button>
@@ -260,15 +272,6 @@ export default function Submit() {
                 <div>
                   <label className="text-sm font-medium text-foreground mb-1 block">Description *</label>
                   <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe the issue in detail..." rows={4} />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-1 block">Category *</label>
-                  <Select value={category} onValueChange={(v) => setCategory(v as Category)}>
-                    <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
-                    <SelectContent>
-                      {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground mb-1 block">Photo Upload</label>
@@ -295,7 +298,7 @@ export default function Submit() {
                   <Button
                     className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90"
                     onClick={() => setStep(3)}
-                    disabled={!title || !description || !category}
+                    disabled={!title || !description}
                   >
                     Next: Location
                   </Button>

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { AdminLayout } from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,26 +9,33 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { AlertTriangle, Clock, CheckCircle2, Users, Eye, UserCheck, CircleCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { complaints, departments, getCategoryData, getStatusData, getDailyVolumeData, STATUS_COLORS, PRIORITY_COLORS } from '@/data/mockData';
+import { departments, STATUS_COLORS, PRIORITY_COLORS, type Complaint } from '@/data/mockData';
 
+const API_BASE = 'http://localhost:8000';
 const CHART_COLORS = ['hsl(210,53%,23%)', 'hsl(27,91%,54%)', 'hsl(142,71%,35%)', 'hsl(38,92%,50%)', 'hsl(0,84%,50%)', 'hsl(210,30%,60%)', 'hsl(270,50%,50%)', 'hsl(180,50%,40%)'];
 const STATUS_CHART_COLORS = ['hsl(210,20%,70%)', 'hsl(38,92%,50%)', 'hsl(210,53%,23%)', 'hsl(27,91%,54%)', 'hsl(142,71%,35%)'];
 
 export default function Admin() {
-  const categoryData = useMemo(() => getCategoryData(), []);
-  const statusData = useMemo(() => getStatusData(), []);
-  const dailyData = useMemo(() => getDailyVolumeData(), []);
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [stats, setStats] = useState({ openCount: 0, criticalCount: 0, avgResolutionTime: 3.2, satisfaction: 4.1 });
+  const [categoryData, setCategoryData] = useState<{ name: string; value: number }[]>([]);
+  const [statusData, setStatusData] = useState<{ name: string; value: number }[]>([]);
+  const [dailyData, setDailyData] = useState<{ date: string; complaints: number }[]>([]);
 
-  const openCount = complaints.filter(c => c.status !== 'Resolved').length;
-  const criticalCount = complaints.filter(c => c.priority === 'CRITICAL' && c.status !== 'Resolved').length;
-  const avgTime = 3.2;
-  const satisfaction = 4.1;
+  useEffect(() => {
+    // Fetch all dashboard data from backend
+    fetch(`${API_BASE}/api/complaints`).then(r => r.json()).then(setComplaints).catch(() => {});
+    fetch(`${API_BASE}/api/admin/stats`).then(r => r.json()).then(setStats).catch(() => {});
+    fetch(`${API_BASE}/api/admin/charts/category`).then(r => r.json()).then(setCategoryData).catch(() => {});
+    fetch(`${API_BASE}/api/admin/charts/status`).then(r => r.json()).then(setStatusData).catch(() => {});
+    fetch(`${API_BASE}/api/admin/charts/daily-volume`).then(r => r.json()).then(setDailyData).catch(() => {});
+  }, []);
 
   const kpis = [
-    { title: 'Total Open', value: openCount, icon: AlertTriangle, color: 'text-accent' },
-    { title: 'Critical Pending', value: criticalCount, icon: Clock, color: 'text-critical' },
-    { title: 'Avg Resolution', value: `${avgTime} days`, icon: CheckCircle2, color: 'text-success' },
-    { title: 'Satisfaction', value: `${satisfaction}/5`, icon: Users, color: 'text-primary' },
+    { title: 'Total Open', value: stats.openCount, icon: AlertTriangle, color: 'text-accent' },
+    { title: 'Critical Pending', value: stats.criticalCount, icon: Clock, color: 'text-critical' },
+    { title: 'Avg Resolution', value: `${stats.avgResolutionTime} days`, icon: CheckCircle2, color: 'text-success' },
+    { title: 'Satisfaction', value: `${stats.satisfaction}/5`, icon: Users, color: 'text-primary' },
   ];
 
   return (
@@ -125,10 +132,13 @@ export default function Admin() {
                 {complaints
                   .filter(c => c.status !== 'Resolved')
                   .sort((a, b) => {
-                    const order = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
-                    return order[a.priority] - order[b.priority];
+                    const order: Record<string, number> = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
+                    const priorityDiff = (order[a.priority] ?? 3) - (order[b.priority] ?? 3);
+                    if (priorityDiff !== 0) return priorityDiff;
+                    // Within same priority, show newest first
+                    return new Date(b.created).getTime() - new Date(a.created).getTime();
                   })
-                  .slice(0, 10)
+                  .slice(0, 20)
                   .map(c => {
                     const sla = new Date(c.created);
                     sla.setDate(sla.getDate() + (c.priority === 'CRITICAL' ? 1 : c.priority === 'HIGH' ? 3 : 7));
